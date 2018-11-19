@@ -1,0 +1,49 @@
+---
+  - name: "Installing datadog agent"
+    hosts: all
+    become: yes
+    vars:
+    datadog_client: datadog agent rpm file url     
+        
+    tasks:
+    
+    - name: Download the data dog
+      get_url:
+        url: {{ datadog_client }}
+        dest: /tmp/
+        mode: 0440
+
+    - name: Install the data dog agent rpm
+      yum:
+        name: /tmp/datadog-agent-5.21.0-1.x86_64.rpm
+        state: present
+    
+    - copy:
+        src: /etc/dd-agent/datadog.conf.example
+        dest: /etc/dd-agent/datadog.conf
+        owner: dd-agent
+        group: dd-agent
+        mode: 0755
+
+    - name: remove existing api key
+      shell: sed -i '/api_key:/d' /etc/dd-agent/datadog.conf
+      
+    - lineinfile:
+        path: /etc/dd-agent/datadog.conf
+        line: 'api_key: #API key value'
+     
+    - lineinfile:
+        path: /etc/dd-agent/datadog.conf
+        line: 'hostname: {{ ansible_hostname }}'
+
+    - service:
+        name: datadog-agent
+        state: restarted
+
+    - name: Remove the donwloaded file
+      file:
+        path: /tmp/datadog-agent-5.21.0-1.x86_64.rpm
+        state: absent
+    - name: Get EC2 facts
+      action: ec2_facts
+      register: ec2_facts
