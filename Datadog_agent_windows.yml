@@ -1,0 +1,25 @@
+---
+  - name: Install datadog agent on windows
+    hosts: all
+    gather_facts: yes
+    vars:
+      ansible_winrm_transport: ssl
+      ansible_winrm_operation_timeout_sec: 100
+      ansible_winrm_read_timeout_sec: 120
+      
+    tasks:
+      - name: Remove the datadog agent installation file if exists
+        win_file:
+          path: C:\Users\Downloads\ddagent-cli-latest.msi
+          state: absent
+
+      - name: Run a power shell command to download datadog agent
+        win_shell: "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;Invoke-WebRequest -uri https://ddagent-cli-latest.msi -Outfile C:/Users/Downloads/ddagent-cli-latest.msi"
+
+      - name: Install the datadog agent
+        win_package:
+          path: C:\Users\Downloads\ddagent-cli-latest.msi
+          extra_args: ' /qn APIKEY="#API key value"'
+          become: yes
+          state: present
+          become_user: Administrator
