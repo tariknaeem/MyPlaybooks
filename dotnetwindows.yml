@@ -1,0 +1,9 @@
+---
+- hosts: all
+  tasks:
+  - name: Install NET-Framework-Core from file
+    win_feature:
+      name: NET-Framework-Core
+      state: present
+      include_sub_features: yes
+      include_management_tools: yes 
