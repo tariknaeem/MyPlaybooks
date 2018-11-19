@@ -1,0 +1,33 @@
+---
+    - name: Windows domain join
+      hosts: all
+      gather_facts: yes
+      
+      vars:
+      ad_username: admin username
+      ad_password: admin password
+      
+      tasks:
+#      - name: Set DNS for US-east
+#        win_dns_client:
+#          adapter_names: Ethernet
+#          ipv4_addresses: "{{ dns_address }}"
+          
+#      - name: reboot machine to update the changes
+#        win_reboot:
+#          reboot_timeout: 180
+      
+      - name: Windows Domain join command
+        win_domain_membership:
+          dns_domain_name: "#domain name"
+          domain_admin_user: "#Domain address\\{{ ad_username }}"
+          domain_admin_password: '{{ ad_password }}'
+          domain_ou_path: "{{ ou_path }}"
+          state: domain
+        register: domain_state
+        become_method: runas
+        become_user: Administrator
+        ignore_errors: True
+        retries: 8
+        delay: 3
+        until: domain_state|succeeded
