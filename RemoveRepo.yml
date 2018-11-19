@@ -1,0 +1,39 @@
+---
+- hosts: all
+  become: true
+  tasks:
+  - name: creating folder for taking backup for repo files
+    file:
+      path: /etc/yum.repos.d_bak
+      state: directory
+      mode: 0755
+
+  - name: taking backup of repo file into yum.repos.d_bak folder
+    shell: cp -r /etc/yum.repos.d/*.repo /etc/yum.repos.d_bak/
+    ignore_errors: yes
+#    copy:
+#      src: /etc/yum.repos.d/*
+#      dest: /etc/yum.repos.d_bak/
+#      remote_src: yes
+
+  - name: fetching repo names
+    shell: ls /etc/yum.repos.d/
+    register: contents
+
+  - name: removing repo files from host machine
+    file:
+      path: /etc/yum.repos.d/{{ item }}
+      state: absent
+    with_items:
+    - "{{ contents.stdout_lines }}"
+
+#  - name: removing repo files from host machine
+#    shell: rm -rf /etc/yum.repos.d/*.repo
+
+  - name: disabling all the repo's
+    shell: yum-config-manager --disable \*
+    ignore_errors: yes
+
+  - name: cleaning yum
+    shell: yum clean all
+    ignore_errors: yes
