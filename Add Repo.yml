@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: true
+  vars:
+
+    repo_env: prod
+
+# repository server host
+    repo_server: repositoryserver
+
+# repository rhel version
+    repo_rhel_version: 7
+  
+  tasks:
+  - name: Adding yum repo
+    yum_repository:
+      name: my_{{ repo_env }}_repo_APP
+      description: Repository server
+      baseurl: http://{{ repo_server }}/{{ repo_env }}/RHEL/{{ repo_rhel_version }}/applications/x86_64
+      gpgcheck: no
+      enabled: yes
+      state: present
+      
+  - name: cleanup
+    shell: yum clean all
