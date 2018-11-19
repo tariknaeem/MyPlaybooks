@@ -1,0 +1,15 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+    - name: Install IIS Web-Server
+      win_feature:
+        name:
+        - Web-Server
+        - Web-Common-Http
+        state: present
+        restart: True
+    - name: reboot windows
+      win_reboot:
+        shutdown_timeout: 100
+        reboot_timeout: 100
