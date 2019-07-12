@@ -3,7 +3,8 @@
   become: true
   gather_facts: false
   tasks:
-    - ping:
+    - name: ping  
+      action: ping
   tasks:
     - name: install httpd
       apt: name=httpd update_cache=yes state=latest
