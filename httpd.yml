@@ -1,7 +1,7 @@
 ---
 - hosts: cont
   become: true
-    tasks:  
+    tasks:
     - name: Install Apache Webserver
       apt: pkg=httpd state=latest
     - name: Enable Apache on system reboot
