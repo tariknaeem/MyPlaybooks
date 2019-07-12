@@ -1,6 +1,9 @@
 ---
 - hosts: cont
   become: true
+  gather_facts: false
+  tasks:
+    - ping:
   tasks:
     - name: install httpd
       apt: name=httpd update_cache=yes state=latest
